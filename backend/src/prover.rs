@@ -38,10 +38,10 @@ pub fn generate_proof(req: &ProveRequest) -> Result<ProveResponse> {
     let inputs = json!({
         "current_year": current_year.to_string(),
         "threshold": req.threshold.to_string(),
-        "issuer_pubkey_hash": req.issuer_pubkey_hash,
+        "issuer_pubkey": req.issuer_pubkey,
         "birth_year": req.birth_year.to_string(),
         "issuer_signature": req.issuer_signature,
-        "signature_randomness": req.signature_randomness,
+        "signature_nonce": req.signature_nonce,
     });
     let input_path = tmp_dir.join("input.json");
     std::fs::write(&input_path, inputs.to_string())?;

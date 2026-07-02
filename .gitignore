@@ -17,3 +17,10 @@ node_modules/
 
 # OS
 .DS_Store
+circuit/pot12_*.ptau
+circuit/age_0000.zkey
+circuit/age.r1cs
+circuit/age.sym
+circuit/age_js/
+build/age.sym
+circuit/pot12_*.ptau

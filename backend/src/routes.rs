@@ -49,7 +49,7 @@ fn validate_prove(req: &ProveRequest) -> Result<(), (axum::http::StatusCode, Str
     if req.threshold < 13 || req.threshold > 120 {
         return Err((axum::http::StatusCode::BAD_REQUEST, "threshold must be between 13 and 120".into()));
     }
-    if req.issuer_pubkey_hash.is_empty() || req.issuer_signature.is_empty() || req.signature_randomness.is_empty() {
+    if req.issuer_pubkey.is_empty() || req.issuer_signature.is_empty() || req.signature_nonce.is_empty() {
         return Err((axum::http::StatusCode::BAD_REQUEST, "issuer fields must be non-empty".into()));
     }
     Ok(())

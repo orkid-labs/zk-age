@@ -13,13 +13,12 @@ pub struct IssueRequest {
 /// needs to generate a ZK proof.
 #[derive(Debug, Serialize)]
 pub struct IssueResponse {
-    /// The issuer's public key hash (public input to the circuit).
-    pub issuer_pubkey_hash: String,
-    /// The issuer's signature on (birth_year, pubkey_hash, randomness).
-    /// In production this would be a Poseidon/EdDSA signature.
+    /// The issuer's public key: pk = Poseidon(sk) (public input to circuit).
+    pub issuer_pubkey: String,
+    /// The issuer's Poseidon-based signature: sig = sk + Poseidon(pk, m, r).
     pub issuer_signature: String,
-    /// Randomness used in the signature (private input).
-    pub signature_randomness: String,
+    /// Random nonce used in the signature (private input).
+    pub signature_nonce: String,
     /// The birth year (private input — user keeps this, only used locally).
     pub birth_year: u64,
 }
@@ -28,9 +27,9 @@ pub struct IssueResponse {
 #[derive(Debug, Deserialize)]
 pub struct ProveRequest {
     pub birth_year: u64,
-    pub issuer_pubkey_hash: String,
+    pub issuer_pubkey: String,
     pub issuer_signature: String,
-    pub signature_randomness: String,
+    pub signature_nonce: String,
     /// Age threshold to prove (e.g., 18, 21).
     pub threshold: u64,
 }
