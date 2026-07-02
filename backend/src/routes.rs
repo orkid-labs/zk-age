@@ -29,21 +29,44 @@ async fn health() -> Json<HealthResponse> {
 async fn issue(
     Json(req): Json<IssueRequest>,
 ) -> Result<Json<IssueResponse>, (axum::http::StatusCode, String)> {
+    validate_issue(&req)?;
     crate::issuer::issue(&req)
         .map(Json)
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))
+}
+
+fn validate_issue(req: &IssueRequest) -> Result<(), (axum::http::StatusCode, String)> {
+    if req.birth_year < 1900 || req.birth_year > 2026 {
+        return Err((axum::http::StatusCode::BAD_REQUEST, "birth_year must be between 1900 and 2026".into()));
+    }
+    Ok(())
+}
+
+fn validate_prove(req: &ProveRequest) -> Result<(), (axum::http::StatusCode, String)> {
+    if req.birth_year < 1900 || req.birth_year > 2026 {
+        return Err((axum::http::StatusCode::BAD_REQUEST, "birth_year must be between 1900 and 2026".into()));
+    }
+    if req.threshold < 13 || req.threshold > 120 {
+        return Err((axum::http::StatusCode::BAD_REQUEST, "threshold must be between 13 and 120".into()));
+    }
+    if req.issuer_pubkey_hash.is_empty() || req.issuer_signature.is_empty() || req.signature_randomness.is_empty() {
+        return Err((axum::http::StatusCode::BAD_REQUEST, "issuer fields must be non-empty".into()));
+    }
+    Ok(())
 }
 
 async fn prove(
     axum::extract::State(state): axum::extract::State<Arc<AppState>>,
     Json(req): Json<ProveRequest>,
 ) -> Result<Json<ProveResponse>, (axum::http::StatusCode, String)> {
+    validate_prove(&req)?;
     let result = crate::prover::generate_proof(&req)
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     // Track metrics with energy score
     let user_id = format!("user-{}", req.birth_year); // simplified
     state.record_proof(&user_id, result.energy.energy, result.energy.negentropy_bits);
+
 
     tracing::info!(
         "proof generated: id={}, threshold={}, energy={:.2}, negentropy={:.1} bits, latency={}ms",

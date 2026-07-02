@@ -21,6 +21,8 @@ Privacy-preserving age verification for web2 applications, powered by zero-knowl
 
 zk-age lets any web2 application verify a user's age without collecting or storing their birthdate. The user generates a Groth16 zero-knowledge proof that demonstrates `current_year - birth_year >= threshold`, and the proof is verified on zkVerify — a high-performance blockchain dedicated to ZK proof verification.
 
+> **Status:** This repository is a **circuit skeleton and scoring infrastructure demo**. The issuer signature scheme in the current circom circuit is a placeholder (algebraic, not cryptographically secure). The next sprint replaces it with a Poseidon/Merkle-tree-based issuer registry. Do not deploy this as-is for real age verification.
+
 **The user never reveals their actual age. The verifier never sees the birthdate. Only the boolean result (eligible / not eligible) is confirmed.**
 
 ### Why this matters

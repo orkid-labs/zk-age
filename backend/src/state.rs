@@ -1,17 +1,17 @@
 //! Application state — tracks metrics for Thrive grant milestones.
 
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Mutex;
+use std::sync::RwLock;
 use std::collections::HashSet;
 
 pub struct AppState {
     pub proofs_generated: AtomicU64,
     pub proofs_verified: AtomicU64,
     pub zkverify_submissions: AtomicU64,
-    pub unique_users: Mutex<HashSet<String>>,
-    pub last_proof_at: Mutex<Option<String>>,
-    pub energy_sum: Mutex<f64>,
-    pub negentropy_sum: Mutex<f64>,
+    pub unique_users: RwLock<HashSet<String>>,
+    pub last_proof_at: RwLock<Option<String>>,
+    pub energy_sum: RwLock<f64>,
+    pub negentropy_sum: RwLock<f64>,
 }
 
 impl AppState {
@@ -20,25 +20,29 @@ impl AppState {
             proofs_generated: AtomicU64::new(0),
             proofs_verified: AtomicU64::new(0),
             zkverify_submissions: AtomicU64::new(0),
-            unique_users: Mutex::new(HashSet::new()),
-            last_proof_at: Mutex::new(None),
-            energy_sum: Mutex::new(0.0),
-            negentropy_sum: Mutex::new(0.0),
+            unique_users: RwLock::new(HashSet::new()),
+            last_proof_at: RwLock::new(None),
+            energy_sum: RwLock::new(0.0),
+            negentropy_sum: RwLock::new(0.0),
         }
     }
 
     pub fn record_proof(&self, user_id: &str, energy: f64, negentropy_bits: f64) {
         self.proofs_generated.fetch_add(1, Ordering::Relaxed);
-        if let Ok(mut users) = self.unique_users.lock() {
+        {
+            let mut users = self.unique_users.write().expect("unique_users lock poisoned");
             users.insert(user_id.to_string());
         }
-        if let Ok(mut ts) = self.last_proof_at.lock() {
+        {
+            let mut ts = self.last_proof_at.write().expect("last_proof_at lock poisoned");
             *ts = Some(chrono::Utc::now().to_rfc3339());
         }
-        if let Ok(mut sum) = self.energy_sum.lock() {
+        {
+            let mut sum = self.energy_sum.write().expect("energy_sum lock poisoned");
             *sum += energy;
         }
-        if let Ok(mut sum) = self.negentropy_sum.lock() {
+        {
+            let mut sum = self.negentropy_sum.write().expect("negentropy_sum lock poisoned");
             *sum += negentropy_bits;
         }
     }
@@ -52,24 +56,16 @@ impl AppState {
     }
 
     pub fn stats(&self) -> (u64, u64, u64, u64, Option<String>, f64, f64) {
-        let users = self
-            .unique_users
-            .lock()
-            .map(|u| u.len() as u64)
-            .unwrap_or(0);
-        let last = self
-            .last_proof_at
-            .lock()
-            .ok()
-            .and_then(|t| t.clone());
+        let users = self.unique_users.read().expect("unique_users read lock poisoned").len() as u64;
+        let last = self.last_proof_at.read().expect("last_proof_at read lock poisoned").clone();
         let count = self.proofs_generated.load(Ordering::Relaxed);
         let avg_energy = if count == 0 {
             0.0
         } else {
-            let sum = self.energy_sum.lock().map(|s| *s).unwrap_or(0.0);
+            let sum = *self.energy_sum.read().expect("energy_sum read lock poisoned");
             sum / count as f64
         };
-        let total_negentropy = self.negentropy_sum.lock().map(|s| *s).unwrap_or(0.0);
+        let total_negentropy = *self.negentropy_sum.read().expect("negentropy_sum read lock poisoned");
         (
             self.proofs_generated.load(Ordering::Relaxed),
             self.proofs_verified.load(Ordering::Relaxed),
