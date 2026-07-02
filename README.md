@@ -204,6 +204,18 @@ export ZKVERIFY_URL="https://testnet.kurier.xyz/api/v1"
 
 Without an API key, the backend falls back to local snarkjs verification — the demo still works, but proofs aren't submitted to zkVerify.
 
+### Production hardening
+
+The backend is locked down for production deployment with two middleware layers:
+
+1. **API key authentication** (`src/auth.rs`) — every sensitive endpoint (`/api/issue`, `/api/prove`, `/api/verify`, `/api/stats`, `/api/energy/*`) requires the `x-api-key` header to match `ORKID_API_KEY`. `/api/health` remains exempt so load balancers can reach it. Dev mode: if `ORKID_API_KEY` is unset, all requests are allowed.
+2. **CORS restriction** (`src/auth.rs`) — cross-origin access is limited to the comma-separated list in `ORKID_CORS_ORIGINS`, defaulting to `http://localhost:3000`. Wildcard CORS is removed.
+
+```bash
+export ORKID_API_KEY="your-256-bit-secret"
+export ORKID_CORS_ORIGINS="https://app.orkidlabs.xyz,http://localhost:3000"
+```
+
 ## Quick start
 
 ### Prerequisites
@@ -243,12 +255,14 @@ Open http://localhost:3000 in your browser. Enter a birth year, select a thresho
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/health` | GET | Health check |
+| `/api/health` | GET | Health check (unauthenticated) |
 | `/api/issue` | POST | Issue a signed birthdate credential (simulated ID authority) |
 | `/api/prove` | POST | Generate a Groth16 ZK proof of age + compute FMD energy score |
 | `/api/verify` | POST | Verify a proof via zkVerify (or local fallback) |
 | `/api/stats` | GET | Metrics for Thrive grant milestone tracking + energy stats |
 | `/api/energy/:id` | GET | FMD physics energy model details and references |
+
+All endpoints except `/api/health` require `x-api-key: $ORKID_API_KEY` in production. |
 
 ## Build & test
 
@@ -269,6 +283,7 @@ zk-age/
 │   └── src/
 │       ├── main.rs             # axum server entry
 │       ├── routes.rs           # HTTP API + energy endpoint
+│       ├── auth.rs             # API key + CORS middleware
 │       ├── types.rs            # API types (with energy fields)
 │       ├── state.rs            # Metrics tracking (with energy sum)
 │       ├── issuer.rs           # Credential issuance (simulated authority)
