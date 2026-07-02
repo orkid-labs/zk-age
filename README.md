@@ -21,7 +21,7 @@ Privacy-preserving age verification for web2 applications, powered by zero-knowl
 
 zk-age lets any web2 application verify a user's age without collecting or storing their birthdate. The user generates a Groth16 zero-knowledge proof that demonstrates `current_year - birth_year >= threshold`, and the proof is verified on zkVerify — a high-performance blockchain dedicated to ZK proof verification.
 
-> **Status:** This repository is a **circuit skeleton and scoring infrastructure demo**. The issuer signature scheme in the current circom circuit is a placeholder (algebraic, not cryptographically secure). The next sprint replaces it with a Poseidon/Merkle-tree-based issuer registry. Do not deploy this as-is for real age verification.
+> **Status:** The issuer signature scheme uses a **Poseidon-based Schnorr-like signature** (`pk = Poseidon(sk)`, `sig = sk + Poseidon(pk, m, r)`, verified in-circuit via `Poseidon(sig - h) === pk`). Forging requires a preimage attack on Poseidon over BN254. The issuer secret key is hardcoded for demo purposes — production deployment should use an HSM or secure key ceremony.
 
 **The user never reveals their actual age. The verifier never sees the birthdate. Only the boolean result (eligible / not eligible) is confirmed.**
 
@@ -162,9 +162,10 @@ The birth year is never in the public signals. The verifier learns only that the
 
 ### Production upgrade path
 
-The demo uses a simplified algebraic signature (`sig = birth_year + pubkey * randomness`). Production would swap in:
-- **Poseidon hash** for the signature (one-line change in circom)
-- **EdDSA on BabyJubJub** for real cryptographic signatures
+The circuit uses a Poseidon-based Schnorr-like signature (`sig = sk + Poseidon(pk, m, r)`, verified via `Poseidon(sig - h) === pk`). Further production hardening:
+- **HSM-backed issuer key** instead of hardcoded demo secret
+- **EdDSA on BabyJubJub** for full digital signature semantics (non-repudiation)
+- **Merkle-tree issuer registry** for revocation and multi-issuer support
 - The circuit structure and zkVerify integration remain identical
 
 ## Tech stack
