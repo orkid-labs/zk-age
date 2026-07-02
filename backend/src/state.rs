@@ -14,6 +14,12 @@ pub struct AppState {
     pub negentropy_sum: RwLock<f64>,
 }
 
+impl Default for AppState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AppState {
     pub fn new() -> Self {
         Self {

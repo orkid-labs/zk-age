@@ -13,7 +13,7 @@
 //! local snarkjs verification so the demo still works.
 
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::time::Duration;
 
 use crate::types::VerifyResponse;
@@ -63,6 +63,7 @@ struct SubmitProofResponse {
 struct JobStatusResponse {
     status: String,
     #[serde(default)]
+    #[allow(dead_code)]
     verified: Option<bool>,
     #[serde(default)]
     tx_hash: Option<String>,
