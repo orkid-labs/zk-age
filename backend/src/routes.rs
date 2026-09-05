@@ -138,7 +138,7 @@ async fn energy(
         "constraint_count": 17,
         "origin": "orkid fmd-physics/src/route_energy.rs",
         "references": {
-            "route_energy": "https://github.com/jjcav84/orkid/blob/main/fmd-physics/src/route_energy.rs",
+            "route_energy": "https://github.com/orkid-labs/orkid/blob/main/fmd-physics/src/route_energy.rs",
             "blog_thermodynamics": "Blockchain Thermodynamics: How Negentropy Explains MEV",
             "blog_negentropy": "Negentropy = Information: A Generalized Mathematical Framework",
             "blog_route_scoring": "Complex Microstructure and Route Scoring in DeFi"

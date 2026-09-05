@@ -22,7 +22,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 anyhow = "1"
 thiserror = "1"
 rand = "0.8"
-negentropy = { git = "https://github.com/jjcav84/negentropy.git" }
+negentropy = { git = "https://github.com/orkid-labs/negentropy.git" }
 pso-poseidon = "0.4"
 ark-bn254 = "0.6"
 ark-ff = "0.6"

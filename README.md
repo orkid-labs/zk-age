@@ -6,7 +6,7 @@
 
 **By [Orkid Labs](https://www.orkidlabs.com)** — privacy-first crypto engineering
 
-Privacy-preserving age verification for web2 applications, powered by zero-knowledge proofs, [zkVerify](https://zkverify.io), and an **FMD physics energy model** adapted from the [orkid](https://github.com/jjcav84/orkid) MEV detection engine.
+Privacy-preserving age verification for web2 applications, powered by zero-knowledge proofs, [zkVerify](https://zkverify.io), and an **FMD physics energy model** adapted from the [orkid](https://github.com/orkid-labs/orkid) MEV detection engine.
 
 > **Note:** The orkid repository is private. Access can be provided to
 > Thrive Protocol reviewers and other appropriate cases on request —
