@@ -370,3 +370,18 @@ systems. See our other work at [orkidlabs.com](https://www.orkidlabs.com).
 ## License
 
 MIT
+
+---
+
+## Part of Orkid Labs
+
+**zk-age** — Privacy-preserving age verification for web2 apps — Groth16 proofs verified on zkVerify.
+
+- Install: `cargo install zk-age`
+- Package: https://crates.io/crates/zk-age
+- API docs: https://docs.rs/zk-age
+- Docs: https://docs.orkidlabs.xyz/packages/zk-age
+
+Related Orkid projects: [horizen-age](https://github.com/orkid-labs/horizen-age), [zk-attest](https://github.com/orkid-labs/zk-attest)
+
+Orkid Labs builds gasless, MEV-protected swap routing and agent-native DeFi infrastructure — [orkidlabs.xyz](https://orkidlabs.xyz) · [@orkid-labs on npm](https://www.npmjs.com/org/orkid-labs) · [github.com/orkid-labs](https://github.com/orkid-labs)

@@ -6,6 +6,8 @@ authors.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Rust backend for zk-age: privacy-preserving age verification with ZK proofs and zkVerify integration"
+keywords = ["zero-knowledge", "age-verification", "groth16", "zkverify", "privacy"]
+categories = ["cryptography", "web-programming"]
 
 [dependencies]
 axum = "0.7"
@@ -22,7 +24,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 anyhow = "1"
 thiserror = "1"
 rand = "0.8"
-negentropy = { git = "https://github.com/orkid-labs/negentropy.git" }
+negentropy = { version = "0.1.0", package = "orkid-negentropy" }
 pso-poseidon = "0.4"
 ark-bn254 = "0.6"
 ark-ff = "0.6"
